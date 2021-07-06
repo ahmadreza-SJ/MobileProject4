@@ -110,7 +110,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     fun updateMarkers(){
         locationViewModel.allCellWithLocations.observe(this, Observer { allCells ->
             // Update the list of markers
-            allCells?.let { showBaseStatioMarkers(allCells, color_method) }
+            allCells?.let { showAllStatioMarkers(allCells, color_method) }
         })
     }
 
@@ -147,27 +147,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             activeMarkers.add(marker)
         }
     }
-
-    fun showBaseStatioMarkers(allCells: List<CellWithLocations>, coloring_method: String) {
-
-//        for(marker in activeMarkers) {
-//            marker.remove()
-//        }
-
-        var time = 0
-        lateinit var the_cell : NetCell
-        if (allCells != null) {
-            for (data in allCells.iterator()) {
-                val locations = data.locData
-                for (location in locations) {
-                    if (location.time > time)
-                    {
-                        the_cell = NetCell(data.cell,location)
-                        time = location.time.toInt()
-                    }
-                }
-            }
-        }
 
         val cid: Double = the_cell.cell.cid.toDouble()
         val x = the_cell.location.latitude
