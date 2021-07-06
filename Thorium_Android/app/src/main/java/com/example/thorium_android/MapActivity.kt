@@ -147,24 +147,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             activeMarkers.add(marker)
         }
     }
-
-        val cid: Double = the_cell.cell.cid.toDouble()
-        val x = the_cell.location.latitude
-        val y = the_cell.location.longitude
-        val pos = LatLng(x, y)
-        val color = getColorz(the_cell.cell,coloring_method)
-        val plmn = the_cell.cell.mcc + the_cell .cell.mnc
-        val lac = the_cell.cell.lac_tac
-        val celtype = the_cell.cell.cellType
-
-        val snip = "$celtype \n Cell: $cid \n PLMN $plmn \n LAC $lac"
-        val marker = mMap.addMarker(MarkerOptions().icon(
-            BitmapDescriptorFactory.defaultMarker(color)).position(
-            pos).title(cid.toString()).snippet(snip))
-        activeMarkers.add(marker)
-        Log.d("ADebugTag", "After new point adding");
-    }
-
+    
     fun getColorz(cell: Cell, coloring_method: String): Float {
         val colors = listOf(
                 BitmapDescriptorFactory.HUE_AZURE,
