@@ -109,8 +109,13 @@ class MainActivity : AppCompatActivity() {
         var cid: String = ""
         var mcc: String = ""
         var mnc: String = ""
-        var lac: String = ""
-        var arfcn: String = ""
+        var rssi: String = ""
+        var rxlev: String = ""
+        var rsrp: String = ""
+        var rsrq: String = ""
+        var ecn0: String = ""
+        var cpich: String = ""
+        var cqi: String = ""
         var cell_type: String = ""
 
         val infos = tm.allCellInfo
@@ -125,29 +130,40 @@ class MainActivity : AppCompatActivity() {
             val cellInfo = tm.allCellInfo[0]
             if (cellInfo is CellInfoGsm) {
                 val cellIdentityGsm: CellIdentityGsm = cellInfo.cellIdentity
+                val cellStrength: CellSignalStrengthGsm = cellInfo.cellSignalStrength
                 cid = cellIdentityGsm.cid.toString()
                 mcc = cellIdentityGsm.mccString.toString()
                 mnc = cellIdentityGsm.mncString.toString()
-                lac = cellIdentityGsm.lac.toString()
-                arfcn = cellIdentityGsm.getArfcn().toString()
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                    rssi = cellStrength.rssi.toString()
+                }
+                rxlev = cellStrength.dbm.toString()
                 cell_type = "GSM"
             }
             if (cellInfo is CellInfoWcdma) {
                 val cellIdentityWcdma: CellIdentityWcdma = cellInfo.cellIdentity
+                val celllStrength : CellSignalStrengthWcdma = cellInfo.cellSignalStrength
                 cid = cellIdentityWcdma.cid.toString()
                 mcc = cellIdentityWcdma.mccString.toString()
                 mnc = cellIdentityWcdma.mncString.toString()
-                lac = cellIdentityWcdma.lac.toString()
-                arfcn = cellIdentityWcdma.uarfcn.toString()
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                    ecn0 = celllStrength.ecNo.toString()
+                }
+                cpich = celllStrength.dbm.toString()
                 cell_type = "UMTS"
             }
             if (cellInfo is CellInfoLte) {
                 val cellIdentityLte: CellIdentityLte = cellInfo.cellIdentity
+                val celStrength : CellSignalStrengthLte = cellInfo.cellSignalStrength
                 cid = cellIdentityLte.ci.toString()
                 mcc = cellIdentityLte.mccString.toString()
                 mnc = cellIdentityLte.mncString.toString()
-                lac = cellIdentityLte.tac.toString()
-                arfcn = cellIdentityLte.earfcn.toString()
+                rsrp = celStrength.rsrp.toString()
+                rsrq = celStrength.rsrq.toString()
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                    rssi = celStrength.rssi.toString()
+                }
+                cqi = celStrength.cqi.toString()
                 cell_type = "LTE"
             }
         }
