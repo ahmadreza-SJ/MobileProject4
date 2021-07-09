@@ -8,7 +8,6 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
-import androidx.lifecycle.Observer
 import android.os.Handler
 import android.os.Looper
 import android.telephony.*
@@ -20,7 +19,7 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.thorium_android.entities.Cell
 import com.example.thorium_android.entities.LocData
@@ -31,7 +30,13 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.InetAddress
+import java.net.URL
 import java.util.*
+import kotlin.system.measureTimeMillis
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -70,6 +75,7 @@ class MainActivity : AppCompatActivity() {
                     mainHandler.post(object : Runnable {
                         override fun run() {
                             getCellInfo(tm)
+                            ping()
                             mainHandler.postDelayed(this, scan_delay)
                         }
                     })
@@ -193,7 +199,10 @@ class MainActivity : AppCompatActivity() {
                             }
                             Log.d("ADebugTag", "distance location! " + distances[0].toString());
                             if (distances[0] < 3) {
-                                Log.d("ADebugTag", "Dont add new locatiob " + distances[0].toString());
+                                Log.d(
+                                    "ADebugTag",
+                                    "Dont add new locatiob " + distances[0].toString()
+                                );
                                 dist_constraint = true
                             }
                         }
@@ -229,6 +238,40 @@ class MainActivity : AppCompatActivity() {
             mLocationRequest, mLocationCallback, Looper.myLooper()
         )
     }
+
+    private fun ping(): String {
+        var domain: String = "8.8.8.8"
+        var runtime: Runtime = Runtime.getRuntime()
+        var ipProc: Process = runtime.exec("/system/bin/ping -c 5 " + domain)
+        var bufin = BufferedReader(InputStreamReader(ipProc.inputStream))
+        var latencyResult: String = ""
+        var isFirst = true
+        var tresh : Long = 10000
+        var start: Long = System.currentTimeMillis()
+        while (true) {
+            var inputLine = bufin.readLine()
+            if (inputLine == null) {
+                break
+            } else {
+                if(isFirst == true)
+                {
+                    isFirst = false
+                }
+                else {
+                    latencyResult = inputLine.split("=").last()
+                    println("...........latency $inputLine")
+                    return latencyResult
+                }
+            }
+            var time = System.currentTimeMillis()
+            if ((time - start)> tresh ){
+                println("...........opss")
+                break
+            }
+        }
+        return "Oops!"
+    }
+
 
     private val mLocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
