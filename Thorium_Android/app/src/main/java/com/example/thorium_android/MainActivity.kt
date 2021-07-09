@@ -110,12 +110,11 @@ class MainActivity : AppCompatActivity() {
         var mcc: String = ""
         var mnc: String = ""
         var rssi: String = ""
-        var rxlev: String = ""
+        var level: String = ""
         var rsrp: String = ""
         var rsrq: String = ""
         var ecn0: String = ""
         var cpich: String = ""
-        var cqi: String = ""
         var cell_type: String = ""
 
         val infos = tm.allCellInfo
@@ -137,7 +136,7 @@ class MainActivity : AppCompatActivity() {
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
                     rssi = cellStrength.rssi.toString()
                 }
-                rxlev = cellStrength.dbm.toString()
+                level = cellStrength.level.toString()
                 cell_type = "GSM"
             }
             if (cellInfo is CellInfoWcdma) {
@@ -150,6 +149,7 @@ class MainActivity : AppCompatActivity() {
                     ecn0 = celllStrength.ecNo.toString()
                 }
                 cpich = celllStrength.dbm.toString()
+                level = cellStrength.level.toString()
                 cell_type = "UMTS"
             }
             if (cellInfo is CellInfoLte) {
@@ -163,7 +163,7 @@ class MainActivity : AppCompatActivity() {
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
                     rssi = celStrength.rssi.toString()
                 }
-                cqi = celStrength.cqi.toString()
+                level = cellStrength.level.toString()
                 cell_type = "LTE"
             }
         }
