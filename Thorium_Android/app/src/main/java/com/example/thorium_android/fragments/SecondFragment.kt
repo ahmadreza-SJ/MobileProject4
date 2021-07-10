@@ -32,7 +32,6 @@ class SecondFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_second, container, false)
         return inflater.inflate(R.layout.fragment_second, container, false)
     }
 
@@ -50,7 +49,8 @@ class SecondFragment : Fragment() {
         mapButton.setOnClickListener {
             val navHostFragment =
                 activity?.supportFragmentManager?.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-            navHostFragment.navController.navigate(R.id.action_SecondFragment_to_MapFragment)
+            Log.e("aaa", navHostFragment.toString())
+            navHostFragment.navController.navigate(R.id.action_SecondFragment_to_mapFragment2)
         }
 
         locationViewModel = ViewModelProvider(this).get(LocationViewModel::class.java)

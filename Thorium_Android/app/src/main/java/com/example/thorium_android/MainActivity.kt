@@ -26,7 +26,6 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
 import com.example.thorium_android.entities.Cell
 import com.example.thorium_android.entities.LocData
 import com.example.thorium_android.utils.MapHelpers
@@ -53,7 +52,6 @@ class MainActivity : AppCompatActivity() {
 
         locationViewModel = ViewModelProvider(this).get(LocationViewModel::class.java)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById(R.id.toolbar))
 
 //        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
 //            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)

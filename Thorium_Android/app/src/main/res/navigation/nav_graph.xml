@@ -11,13 +11,12 @@
         android:label="@string/second_fragment_label"
         tools:layout="@layout/fragment_second">
         <action
-            android:id="@+id/action_SecondFragment_to_MapFragment"
-            app:destination="@id/MapFragment" />
+            android:id="@+id/action_SecondFragment_to_mapFragment2"
+            app:destination="@id/mapFragment2" />
     </fragment>
 
     <fragment
-        android:id="@+id/MapFragment"
-        android:name="com.example.thorium_android.fragments.SecondFragment"
-        android:label="@string/map_fragment_label"
-        tools:layout="@layout/fragment_map"/>
+        android:id="@+id/mapFragment2"
+        android:name="com.example.thorium_android.fragments.MapFragment2"
+        android:label="MapFragment2" />
 </navigation>

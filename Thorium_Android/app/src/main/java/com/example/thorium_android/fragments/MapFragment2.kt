@@ -10,28 +10,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.thorium_android.R
 import com.example.thorium_android.utils.MapHelpers
 import com.example.thorium_android.view_models.LocationViewModel
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
-import com.example.thorium_android.utils.MapHelpers.Companion.next_color
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.Marker
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [MapFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class MapFragment : Fragment(), OnMapReadyCallback {
+class MapFragment2 : Fragment(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var locationViewModel: LocationViewModel
@@ -41,18 +29,17 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         arrayOf("CID", "LAC/TAC", "Cell Type", "MCC", "MNC","PLMN", "ARFCN")
     var color_method = "CID"
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        locationViewModel = ViewModelProvider(this).get(LocationViewModel::class.java)
-
-
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_map2, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        locationViewModel = ViewModelProvider(this).get(LocationViewModel::class.java)
         val spinner: Spinner = requireView().findViewById(R.id.spinner)
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, filters)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item)
@@ -60,7 +47,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         val context = this
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
-                next_color = 0
+                MapHelpers.next_color = 0
                 color_map.clear()
                 color_method = spinner.selectedItem.toString()
                 MapHelpers.updateMarkers(
@@ -75,7 +62,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {
-                next_color = 0
+                MapHelpers.next_color = 0
                 color_map.clear()
                 color_method = "CID"
                 MapHelpers.updateMarkers(
@@ -89,7 +76,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
             }
         }
-        return inflater.inflate(R.layout.fragment_map, container, false)
     }
 
     @SuppressLint("MissingPermission")
