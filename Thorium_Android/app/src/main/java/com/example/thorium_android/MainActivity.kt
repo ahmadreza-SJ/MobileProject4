@@ -32,9 +32,11 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.lang.Exception
 import java.net.InetAddress
 import java.net.URL
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.system.measureTimeMillis
 
 
@@ -45,6 +47,8 @@ class MainActivity : AppCompatActivity() {
     private var current_location: Location? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var scan_delay: Long = 1000 * 60
+    private var jitter: Float = 0f
+    private var avg_latency: Float = 0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -239,29 +243,29 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private fun ping(): String {
+    private fun ping() {
         var domain: String = "8.8.8.8"
         var runtime: Runtime = Runtime.getRuntime()
-        var ipProc: Process = runtime.exec("/system/bin/ping -c 5 " + domain)
+        var maxcount = 5
+        var ipProc: Process = runtime.exec("/system/bin/ping -c $maxcount " + domain)
         var bufin = BufferedReader(InputStreamReader(ipProc.inputStream))
-        var latencyResult: String = ""
-        var isFirst = true
+        var latencyResult: Float = 0f
+        var counter = 0
         var tresh : Long = 10000
+        var latencies = listOf<Float>()
         var start: Long = System.currentTimeMillis()
-        while (true) {
+        while (counter <= maxcount) {
             var inputLine = bufin.readLine()
-            if (inputLine == null) {
+            if (inputLine == null || inputLine =="") {
                 break
             } else {
-                if(isFirst == true)
-                {
-                    isFirst = false
+                if(counter >0) {
+                    println("...........input $inputLine")
+                    latencyResult = inputLine.split("=").last().split(" ")[0].toFloat()
+                    latencies = latencies + latencyResult
+                    println("...........latency $latencyResult")
                 }
-                else {
-                    latencyResult = inputLine.split("=").last()
-                    println("...........latency $inputLine")
-                    return latencyResult
-                }
+                counter +=1
             }
             var time = System.currentTimeMillis()
             if ((time - start)> tresh ){
@@ -269,7 +273,24 @@ class MainActivity : AppCompatActivity() {
                 break
             }
         }
-        return "Oops!"
+        try{
+            avg_latency = latencies.sum()/latencies.size
+            var diff = 0.0F
+            for ((i,l) in latencies.withIndex()){
+                if(i>0){
+                    if(latencies[i]-latencies[i-1] > 0)
+                        diff = diff + (latencies[i]-latencies[i-1])
+                    else
+                        diff = diff - (latencies[i]-latencies[i-1])
+                }
+            }
+            jitter = diff/(latencies.size-1)
+        }catch (e: Exception){
+            jitter = -1f
+            avg_latency = -1f
+        }
+        println("...........jitter $jitter")
+        println("...........avg latency $avg_latency")
     }
 
 
