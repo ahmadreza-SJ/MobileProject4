@@ -53,6 +53,8 @@ class MainActivity : AppCompatActivity() {
     private var scan_delay: Long = 1000 * 60
     private var jitter: Float = 0f
     private var avg_latency: Float = 0f
+    var downkilobytePerSec : Int = 0
+    var upkilobytePerSec : Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,9 +84,10 @@ class MainActivity : AppCompatActivity() {
 //
                     mainHandler.post(object : Runnable {
                         override fun run() {
-                            getCellInfo(tm)
                             speed()
+                            upspeed()
                             ping()
+                            getCellInfo(tm)
                             mainHandler.postDelayed(this, scan_delay)
                         }
                     })
@@ -122,8 +125,7 @@ class MainActivity : AppCompatActivity() {
     fun getCellInfo(tm: TelephonyManager){
 
         var cid: String = ""
-        var mcc: String = ""
-        var mnc: String = ""
+        var plmn: String = ""
         var rssi: String = ""
         var level: String = ""
         var rsrp: String = ""
@@ -146,8 +148,7 @@ class MainActivity : AppCompatActivity() {
                 val cellIdentityGsm: CellIdentityGsm = cellInfo.cellIdentity
                 val cellStrength: CellSignalStrengthGsm = cellInfo.cellSignalStrength
                 cid = cellIdentityGsm.cid.toString()
-                mcc = cellIdentityGsm.mccString.toString()
-                mnc = cellIdentityGsm.mncString.toString()
+                plmn = cellIdentityGsm.mccString.toString() + cellIdentityGsm.mncString.toString()
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
                     rssi = cellStrength.rssi.toString()
                 }
@@ -158,8 +159,7 @@ class MainActivity : AppCompatActivity() {
                 val cellIdentityWcdma: CellIdentityWcdma = cellInfo.cellIdentity
                 val celllStrength : CellSignalStrengthWcdma = cellInfo.cellSignalStrength
                 cid = cellIdentityWcdma.cid.toString()
-                mcc = cellIdentityWcdma.mccString.toString()
-                mnc = cellIdentityWcdma.mncString.toString()
+                plmn = cellIdentityWcdma.mccString.toString() +  cellIdentityWcdma.mncString.toString()
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
                     ecn0 = celllStrength.ecNo.toString()
                 }
@@ -171,8 +171,7 @@ class MainActivity : AppCompatActivity() {
                 val cellIdentityLte: CellIdentityLte = cellInfo.cellIdentity
                 val celStrength : CellSignalStrengthLte = cellInfo.cellSignalStrength
                 cid = cellIdentityLte.ci.toString()
-                mcc = cellIdentityLte.mccString.toString()
-                mnc = cellIdentityLte.mncString.toString()
+                plmn = cellIdentityLte.mccString.toString() + cellIdentityLte.mncString.toString()
                 rsrp = celStrength.rsrp.toString()
                 rsrq = celStrength.rsrq.toString()
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
@@ -245,9 +244,7 @@ class MainActivity : AppCompatActivity() {
 
         }
 //        Log.d("ADebugTag", "cid Value: " + cid);
-//        Log.d("ADebugTag", "mcc Value: " + mcc);
-//        Log.d("ADebugTag", "mnc Value: " + mnc);
-//        Log.d("ADebugTag", "lac Value: " + lac);
+//        Log.d("ADebugTag", "plmn Value: " + plmn);
 //        Log.d("ADebugTag", "cell_type Value: " + cell_type);
 
 
@@ -265,30 +262,22 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    var startTime: Long = 0
-    var endTime: Long = 0
-    var fileSize: Int = 0
-    var client: OkHttpClient = OkHttpClient()
 
-    // bandwidth in kbps
-    private val POOR_BANDWIDTH = 150
-    private val AVERAGE_BANDWIDTH = 550
-    private val GOOD_BANDWIDTH = 2000
+
 
     private fun speed(){
+        var startTime: Long = 0
+        var endTime: Long = 0
+        var fileSize: Int = 0
+        var client: OkHttpClient = OkHttpClient()
         val request: Request = Request.Builder()
             .url("https://publicobject.com/helloworld.txt")
             .build()
-
         startTime = System.currentTimeMillis()
-
         client.newCall(request).enqueue(object : Callback {
-
-
             override fun onFailure(call: Call, e: IOException) {
                 e.printStackTrace()
             }
-
             override fun onResponse(call: Call, response: Response) {
                 if (!response.isSuccessful()) throw IOException("Unexpected code $response")
                 val responseHeaders: Headers = response.headers()
@@ -317,14 +306,17 @@ class MainActivity : AppCompatActivity() {
                 val timeTakenSecs = timeTakenMills / 1000 // divide by 1000 to get time in seconds
                 val kilobytePerSec = Math.round(1024 / timeTakenSecs).toInt()
                 println("kilobyte per sec: $kilobytePerSec")
+                downkilobytePerSec = kilobytePerSec
             }
-
         })
 
     }
 
 
-    fun upspeed() {
+    private fun upspeed() {
+        var startTime: Long = 0
+        var endTime: Long = 0
+        var client: OkHttpClient = OkHttpClient()
 //        try {
 //        https://api.imgbb.com/1/upload?key=8deb481db621c460ddaac584c5665308&image=PCFET0NUWVBFIEhUTUwgUFVCTElDICItLy9JRVRGLy9EVEQgSFRNTCAyLjAvL0VOIj4KPGh0bWw+PGhlYWQ+Cjx0aXRsZT4zMDEgTW92ZWQgUGVybWFuZW50bHk8L3RpdGxlPgo8L2hlYWQ+PGJvZHk+CjxoMT5Nb3ZlZCBQZXJtYW5lbnRseTwvaDE+CjxwPlRoZSBkb2N1bWVudCBoYXMgbW92ZWQgPGEgaHJlZj0iaHR0cDovL3NjYWxld2F5LnRlc3RkZWJpdC5pbmZvLyI+aGVyZTwvYT4uPC9wPgo8L2JvZHk+PC9odG1sPgo=
         val jsonObject = JSONObject()
@@ -373,6 +365,7 @@ class MainActivity : AppCompatActivity() {
                     timeTakenMills / 1000 // divide by 1000 to get time in seconds
                 val kilobytePerSec = Math.round(1024 * 5 / timeTakenSecs).toInt()
                 println("upload upload kilobyte per sec: $kilobytePerSec")
+                upkilobytePerSec = kilobytePerSec
             }
         })
 //        } catch (ex: Exception) {
