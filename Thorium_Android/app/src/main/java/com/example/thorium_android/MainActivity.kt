@@ -4,6 +4,8 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.Typeface
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
@@ -13,28 +15,33 @@ import android.os.Handler
 import android.os.Looper
 import android.telephony.*
 import android.util.Log
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import com.example.thorium_android.entities.Cell
 import com.example.thorium_android.entities.LocData
+import com.example.thorium_android.utils.MapHelpers
 import com.example.thorium_android.view_models.LocationViewModel
 import com.google.android.gms.location.*
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.model.Marker
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
-
 
     private lateinit var locationViewModel: LocationViewModel
     private var current_location: Location? = null
@@ -54,7 +61,6 @@ class MainActivity : AppCompatActivity() {
 //        }
 
         isLocationEnabled()
-        val trace_bottun = findViewById<Button>(R.id.button_trace)
         val tm = this.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         Dexter.withContext(this)
                 .withPermissions(
@@ -230,6 +236,8 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+
+
     private val mLocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             val mLastLocation: Location = locationResult.lastLocation
@@ -244,9 +252,4 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    fun showMap(view: View) {
-        val intent = Intent(this, MapActivity::class.java)
-        startActivity(intent)
-
-    }
 }

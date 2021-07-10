@@ -1,4 +1,4 @@
-package com.example.thorium_android
+package com.example.thorium_android.fragments
 
 import android.os.Bundle
 import android.util.Log
@@ -9,12 +9,15 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.thorium_android.R
 import com.example.thorium_android.adapters.LocatopnListAdapter
 import com.example.thorium_android.entities.Cell
 import com.example.thorium_android.entities.LocData
 import com.example.thorium_android.view_models.LocationViewModel
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_second.view.*
 
 /**
@@ -43,6 +46,13 @@ class SecondFragment : Fragment() {
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
+        val mapButton =  view.findViewById<FloatingActionButton>(R.id.button_map)
+        mapButton.setOnClickListener {
+            val navHostFragment =
+                activity?.supportFragmentManager?.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+            navHostFragment.navController.navigate(R.id.action_SecondFragment_to_MapFragment)
+        }
+
         locationViewModel = ViewModelProvider(this).get(LocationViewModel::class.java)
         locationViewModel.allCellWithLocations.observe(viewLifecycleOwner, Observer {
             var dataList: MutableList<Pair<LocData, Cell>> = mutableListOf()
@@ -56,6 +66,8 @@ class SecondFragment : Fragment() {
             adapter.submitList(dataList.map { data -> data })
             // adapter.notifyDataSetChanged()
         })
+
+
 
     }
 }
