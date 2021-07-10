@@ -19,6 +19,7 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.location.LocationManagerCompat.isLocationEnabled
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.thorium_android.entities.Cell
@@ -32,10 +33,15 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import okhttp3.*
 import org.json.JSONObject
+import java.io.*
+import java.util.*
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
-import java.util.*
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.lang.Exception
+
 
 
 class MainActivity : AppCompatActivity() {
@@ -45,6 +51,8 @@ class MainActivity : AppCompatActivity() {
     private var current_location: Location? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var scan_delay: Long = 1000 * 60
+    private var jitter: Float = 0f
+    private var avg_latency: Float = 0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,7 +83,8 @@ class MainActivity : AppCompatActivity() {
                     mainHandler.post(object : Runnable {
                         override fun run() {
                             getCellInfo(tm)
-                            upspeed()
+                            speed()
+                            ping()
                             mainHandler.postDelayed(this, scan_delay)
                         }
                     })
@@ -115,8 +124,12 @@ class MainActivity : AppCompatActivity() {
         var cid: String = ""
         var mcc: String = ""
         var mnc: String = ""
-        var lac: String = ""
-        var arfcn: String = ""
+        var rssi: String = ""
+        var level: String = ""
+        var rsrp: String = ""
+        var rsrq: String = ""
+        var ecn0: String = ""
+        var cpich: String = ""
         var cell_type: String = ""
 
         val infos = tm.allCellInfo
@@ -131,29 +144,41 @@ class MainActivity : AppCompatActivity() {
             val cellInfo = tm.allCellInfo[0]
             if (cellInfo is CellInfoGsm) {
                 val cellIdentityGsm: CellIdentityGsm = cellInfo.cellIdentity
+                val cellStrength: CellSignalStrengthGsm = cellInfo.cellSignalStrength
                 cid = cellIdentityGsm.cid.toString()
                 mcc = cellIdentityGsm.mccString.toString()
                 mnc = cellIdentityGsm.mncString.toString()
-                lac = cellIdentityGsm.lac.toString()
-                arfcn = cellIdentityGsm.getArfcn().toString()
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                    rssi = cellStrength.rssi.toString()
+                }
+                level = cellStrength.level.toString()
                 cell_type = "GSM"
             }
             if (cellInfo is CellInfoWcdma) {
                 val cellIdentityWcdma: CellIdentityWcdma = cellInfo.cellIdentity
+                val celllStrength : CellSignalStrengthWcdma = cellInfo.cellSignalStrength
                 cid = cellIdentityWcdma.cid.toString()
                 mcc = cellIdentityWcdma.mccString.toString()
                 mnc = cellIdentityWcdma.mncString.toString()
-                lac = cellIdentityWcdma.lac.toString()
-                arfcn = cellIdentityWcdma.uarfcn.toString()
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                    ecn0 = celllStrength.ecNo.toString()
+                }
+                cpich = celllStrength.dbm.toString()
+                level = celllStrength.level.toString()
                 cell_type = "UMTS"
             }
             if (cellInfo is CellInfoLte) {
                 val cellIdentityLte: CellIdentityLte = cellInfo.cellIdentity
+                val celStrength : CellSignalStrengthLte = cellInfo.cellSignalStrength
                 cid = cellIdentityLte.ci.toString()
                 mcc = cellIdentityLte.mccString.toString()
                 mnc = cellIdentityLte.mncString.toString()
-                lac = cellIdentityLte.tac.toString()
-                arfcn = cellIdentityLte.earfcn.toString()
+                rsrp = celStrength.rsrp.toString()
+                rsrq = celStrength.rsrq.toString()
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                    rssi = celStrength.rssi.toString()
+                }
+                level = celStrength.level.toString()
                 cell_type = "LTE"
             }
         }
@@ -162,60 +187,61 @@ class MainActivity : AppCompatActivity() {
         }
         finally {
             requestNewLocationData()
-            if (current_location != null )
-            {
-//                Log.d("ADebugTag", "longitude Value: " + current_location!!.longitude);
-//                Log.d("ADebugTag", "latitude Value: " + current_location!!.latitude);
-                val cellData = Cell(
-                    cid = cid,
-                    lac_tac = lac,
-                    mcc = mcc,
-                    mnc = mnc,
-                    arfcn = arfcn,
-                    cellType = cell_type
-                )
-                val location = LocData(
-                    id = null,
-                    latitude = current_location!!.latitude,
-                    longitude = current_location!!.longitude,
-                    cellId = cellData.cid,
-                    time = System.currentTimeMillis(),
-                )
-                var checked : Boolean = false
-                var dist_constraint : Boolean = false
-                locationViewModel.allLocations.observe(this, Observer { locations ->
-                    // Update the list of markers
-                    Log.d("ADebugTag", "Finding each location");
-                    locations?.let {
-                        if (locations != null) {
 
-                            checked = true
-                            val distances = floatArrayOf(.1f)
-                            for (oldlocation in locations.iterator()) {
-                                Location.distanceBetween(
-                                    oldlocation.latitude, oldlocation.longitude,
-                                    location.latitude, location.longitude, distances
-                                );
-                            }
-                            Log.d("ADebugTag", "distance location! " + distances[0].toString());
-                            if (distances[0] < 3) {
-                                Log.d(
-                                    "ADebugTag",
-                                    "Dont add new locatiob " + distances[0].toString()
-                                );
-                                dist_constraint = true
-                            }
-                        }
-                    }
-                })
-                if (checked == false || dist_constraint == false){
-                    Log.d("ADebugTag", "Location added");
-                    locationViewModel.addCell(cellData)
-                    locationViewModel.addLocation(location)
-                }
-
-
-            }
+//            if (current_location != null )
+//            {
+////                Log.d("ADebugTag", "longitude Value: " + current_location!!.longitude);
+////                Log.d("ADebugTag", "latitude Value: " + current_location!!.latitude);
+//                val cellData = Cell(
+//                    cid = cid,
+//                    lac_tac = lac,
+//                    mcc = mcc,
+//                    mnc = mnc,
+//                    arfcn = arfcn,
+//                    cellType = cell_type
+//                )
+//                val location = LocData(
+//                    id = null,
+//                    latitude = current_location!!.latitude,
+//                    longitude = current_location!!.longitude,
+//                    cellId = cellData.cid,
+//                    time = System.currentTimeMillis(),
+//                )
+//                var checked : Boolean = false
+//                var dist_constraint : Boolean = false
+//                locationViewModel.allLocations.observe(this, Observer { locations ->
+//                    // Update the list of markers
+//                    Log.d("ADebugTag", "Finding each location");
+//                    locations?.let {
+//                        if (locations != null) {
+//
+//                            checked = true
+//                            val distances = floatArrayOf(.1f)
+//                            for (oldlocation in locations.iterator()) {
+//                                Location.distanceBetween(
+//                                    oldlocation.latitude, oldlocation.longitude,
+//                                    location.latitude, location.longitude, distances
+//                                );
+//                            }
+//                            Log.d("ADebugTag", "distance location! " + distances[0].toString());
+//                            if (distances[0] < 3) {
+//                                Log.d(
+//                                    "ADebugTag",
+//                                    "Dont add new locatiob " + distances[0].toString()
+//                                );
+//                                dist_constraint = true
+//                            }
+//                        }
+//                    }
+//                })
+//                if (checked == false || dist_constraint == false){
+//                    Log.d("ADebugTag", "Location added");
+//                    locationViewModel.addCell(cellData)
+//                    locationViewModel.addLocation(location)
+//                }
+//
+//
+//            }
 
         }
 //        Log.d("ADebugTag", "cid Value: " + cid);
@@ -301,56 +327,109 @@ class MainActivity : AppCompatActivity() {
     fun upspeed() {
 //        try {
 //        https://api.imgbb.com/1/upload?key=8deb481db621c460ddaac584c5665308&image=PCFET0NUWVBFIEhUTUwgUFVCTElDICItLy9JRVRGLy9EVEQgSFRNTCAyLjAvL0VOIj4KPGh0bWw+PGhlYWQ+Cjx0aXRsZT4zMDEgTW92ZWQgUGVybWFuZW50bHk8L3RpdGxlPgo8L2hlYWQ+PGJvZHk+CjxoMT5Nb3ZlZCBQZXJtYW5lbnRseTwvaDE+CjxwPlRoZSBkb2N1bWVudCBoYXMgbW92ZWQgPGEgaHJlZj0iaHR0cDovL3NjYWxld2F5LnRlc3RkZWJpdC5pbmZvLyI+aGVyZTwvYT4uPC9wPgo8L2JvZHk+PC9odG1sPgo=
-           val jsonObject = JSONObject()
-            jsonObject.put(
-                "image",
+        val jsonObject = JSONObject()
+        jsonObject.put(
+            "image",
+            "PCFET0NUWVBFIEhUTUwgUFVCTElDICItLy9JRVRGLy9EVEQgSFRNTCAyLjAvL0VOIj4KPGh0bWw+PGhlYWQ+Cjx0aXRsZT4zMDEgTW92ZWQgUGVybWFuZW50bHk8L3RpdGxlPgo8L2hlYWQ+PGJvZHk+CjxoMT5Nb3ZlZCBQZXJtYW5lbnRseTwvaDE+CjxwPlRoZSBkb2N1bWVudCBoYXMgbW92ZWQgPGEgaHJlZj0iaHR0cDovL3NjYWxld2F5LnRlc3RkZWJpdC5pbmZvLyI+aGVyZTwvYT4uPC9wPgo8L2JvZHk+PC9odG1sPgo="
+        )
+        jsonObject.put("key", "8deb481db621c460ddaac584c5665308")
+        val JSON = MediaType.parse("application/json; charset=utf-8")
+        val body = RequestBody.create(JSON, jsonObject.toString())
+        //            val requestBody: RequestBody = MultipartBody.Builder().setType(MultipartBody.)
+        //                .addFormDataPart(
+        //                    "image", file.getName(),
+        //                    RequestBody.create(MediaType.parse("image/jpg"), file)
+        //                )
+        //                .build()
+        val requestBody: RequestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
+            .addFormDataPart(
+                "imgage",
                 "PCFET0NUWVBFIEhUTUwgUFVCTElDICItLy9JRVRGLy9EVEQgSFRNTCAyLjAvL0VOIj4KPGh0bWw+PGhlYWQ+Cjx0aXRsZT4zMDEgTW92ZWQgUGVybWFuZW50bHk8L3RpdGxlPgo8L2hlYWQ+PGJvZHk+CjxoMT5Nb3ZlZCBQZXJtYW5lbnRseTwvaDE+CjxwPlRoZSBkb2N1bWVudCBoYXMgbW92ZWQgPGEgaHJlZj0iaHR0cDovL3NjYWxld2F5LnRlc3RkZWJpdC5pbmZvLyI+aGVyZTwvYT4uPC9wPgo8L2JvZHk+PC9odG1sPgo="
             )
-            jsonObject.put("key", "8deb481db621c460ddaac584c5665308")
-            val JSON = MediaType.parse("application/json; charset=utf-8")
-            val body = RequestBody.create(JSON, jsonObject.toString())
-    //            val requestBody: RequestBody = MultipartBody.Builder().setType(MultipartBody.)
-    //                .addFormDataPart(
-    //                    "image", file.getName(),
-    //                    RequestBody.create(MediaType.parse("image/jpg"), file)
-    //                )
-    //                .build()
-        val requestBody : RequestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
-            .addFormDataPart("imgage","PCFET0NUWVBFIEhUTUwgUFVCTElDICItLy9JRVRGLy9EVEQgSFRNTCAyLjAvL0VOIj4KPGh0bWw+PGhlYWQ+Cjx0aXRsZT4zMDEgTW92ZWQgUGVybWFuZW50bHk8L3RpdGxlPgo8L2hlYWQ+PGJvZHk+CjxoMT5Nb3ZlZCBQZXJtYW5lbnRseTwvaDE+CjxwPlRoZSBkb2N1bWVudCBoYXMgbW92ZWQgPGEgaHJlZj0iaHR0cDovL3NjYWxld2F5LnRlc3RkZWJpdC5pbmZvLyI+aGVyZTwvYT4uPC9wPgo8L2JvZHk+PC9odG1sPgo=")
             .build()
-            println("upload create body.....${requestBody.contentLength()}")
-            val request: Request = Request.Builder()
-                .url("https://api.imgbb.com/1/upload?key=8deb481db621c460ddaac584c5665308&image=PCFET0NUWVBFIEhUTUwgUFVCTElDICItLy9JRVRGLy9EVEQgSFRNTCAyLjAvL0VOIj4KPGh0bWw+PGhlYWQ+Cjx0aXRsZT4zMDEgTW92ZWQgUGVybWFuZW50bHk8L3RpdGxlPgo8L2hlYWQ+PGJvZHk+CjxoMT5Nb3ZlZCBQZXJtYW5lbnRseTwvaDE+CjxwPlRoZSBkb2N1bWVudCBoYXMgbW92ZWQgPGEgaHJlZj0iaHR0cDovL3NjYWxld2F5LnRlc3RkZWJpdC5pbmZvLyI+aGVyZTwvYT4uPC9wPgo8L2JvZHk+PC9odG1sPgo=")
-                .get()
-                .build()
-            println("after request.....")
-            client.newCall(request).enqueue(object : Callback {
-                override fun onFailure(call: Call?, e: IOException?) {
-                    println("fail to upload")
-                    if (e != null) {
-                        e.printStackTrace()
-                    }
+        println("upload create body.....${requestBody.contentLength()}")
+        val request: Request = Request.Builder()
+            .url("https://api.imgbb.com/1/upload?key=8deb481db621c460ddaac584c5665308&image=PCFET0NUWVBFIEhUTUwgUFVCTElDICItLy9JRVRGLy9EVEQgSFRNTCAyLjAvL0VOIj4KPGh0bWw+PGhlYWQ+Cjx0aXRsZT4zMDEgTW92ZWQgUGVybWFuZW50bHk8L3RpdGxlPgo8L2hlYWQ+PGJvZHk+CjxoMT5Nb3ZlZCBQZXJtYW5lbnRseTwvaDE+CjxwPlRoZSBkb2N1bWVudCBoYXMgbW92ZWQgPGEgaHJlZj0iaHR0cDovL3NjYWxld2F5LnRlc3RkZWJpdC5pbmZvLyI+aGVyZTwvYT4uPC9wPgo8L2JvZHk+PC9odG1sPgo=")
+            .get()
+            .build()
+        println("after request.....")
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call?, e: IOException?) {
+                println("fail to upload")
+                if (e != null) {
+                    e.printStackTrace()
                 }
+            }
 
-                override fun onResponse(call: Call?, response: Response) {
-                    if (!response.isSuccessful) {
-                        println("fail to upload unsuccess.....$response")
-                        // Handle the error
-                    }
-                    endTime = System.currentTimeMillis()
-                    val timeTakenMills =
-                        Math.floor((endTime - startTime).toDouble()) // time taken in milliseconds
-                    val timeTakenSecs =
-                        timeTakenMills / 1000 // divide by 1000 to get time in seconds
-                    val kilobytePerSec = Math.round(1024 * 5 / timeTakenSecs).toInt()
-                    println("upload upload kilobyte per sec: $kilobytePerSec")
+            override fun onResponse(call: Call?, response: Response) {
+                if (!response.isSuccessful) {
+                    println("fail to upload unsuccess.....$response")
+                    // Handle the error
                 }
-            })
+                endTime = System.currentTimeMillis()
+                val timeTakenMills =
+                    Math.floor((endTime - startTime).toDouble()) // time taken in milliseconds
+                val timeTakenSecs =
+                    timeTakenMills / 1000 // divide by 1000 to get time in seconds
+                val kilobytePerSec = Math.round(1024 * 5 / timeTakenSecs).toInt()
+                println("upload upload kilobyte per sec: $kilobytePerSec")
+            }
+        })
 //        } catch (ex: Exception) {
 //            println("upload infinal cash.....")
 //
 //            // Handle the error
 //        }
+    }
+
+    private fun ping() {
+        var domain: String = "8.8.8.8"
+        var runtime: Runtime = Runtime.getRuntime()
+        var maxcount = 5
+        var ipProc: Process = runtime.exec("/system/bin/ping -c $maxcount " + domain)
+        var bufin = BufferedReader(InputStreamReader(ipProc.inputStream))
+        var latencyResult: Float = 0f
+        var counter = 0
+        var tresh : Long = 10000
+        var latencies = listOf<Float>()
+        var start: Long = System.currentTimeMillis()
+        while (counter <= maxcount) {
+            var inputLine = bufin.readLine()
+            if (inputLine == null || inputLine =="") {
+                break
+            } else {
+                if(counter >0) {
+                    println("...........input $inputLine")
+                    latencyResult = inputLine.split("=").last().split(" ")[0].toFloat()
+                    latencies = latencies + latencyResult
+                    println("...........latency $latencyResult")
+                }
+                counter +=1
+            }
+            var time = System.currentTimeMillis()
+            if ((time - start)> tresh ){
+                println("...........opss")
+                break
+            }
+        }
+        try{
+            avg_latency = latencies.sum()/latencies.size
+            var diff = 0.0F
+            for ((i,l) in latencies.withIndex()){
+                if(i>0){
+                    if(latencies[i]-latencies[i-1] > 0)
+                        diff = diff + (latencies[i]-latencies[i-1])
+                    else
+                        diff = diff - (latencies[i]-latencies[i-1])
+                }
+            }
+            jitter = diff/(latencies.size-1)
+        }catch (e: Exception){
+            jitter = -1f
+            avg_latency = -1f
+        }
+        println("...........jitter $jitter")
+        println("...........avg latency $avg_latency")
     }
 
 
