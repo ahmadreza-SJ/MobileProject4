@@ -9,9 +9,16 @@ import androidx.room.PrimaryKey
 data class Cell(
 
     @PrimaryKey(autoGenerate = false) val cid: String,
-    val lac_tac: String,
-    val mcc: String,
-    val mnc: String,
-    val arfcn: String,
+    val plmn: String,
+    val rssi: String,
+    val level: String,
+    val rsrp: String,
+    val rsrq: String,
+    val ecn0: String,
+    val cpich: String,
     val cellType: String,
+    val jitter: String,
+    val avgLatency: String,
+    val downKiloBytePerSec: String,
+    val upKiloBytePerSec: String,
 )

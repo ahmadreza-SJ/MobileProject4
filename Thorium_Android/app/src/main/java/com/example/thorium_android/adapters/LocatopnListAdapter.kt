@@ -33,12 +33,20 @@ class LocatopnListAdapter :
         val cell = currentList[position].second
         holder.itemView.type.text = cell!!.cellType
         holder.itemView.time.text = getDate(currentItem.time, "dd/MM/yyyy hh:mm:ss.SSS")
-        holder.itemView.altitude.text = "Lat: " +  currentItem.latitude.toString()
+        holder.itemView.latitude.text = "Lat: " +  currentItem.latitude.toString()
         holder.itemView.longitude.text = "Long: " + currentItem.longitude.toString()
-        holder.itemView.mcc.text = "MCC: " + cell!!.mcc
-        holder.itemView.mnc.text = "MNC: " + cell!!.mnc
-        holder.itemView.lac.text = "LAC/TAC: " + cell!!.lac_tac
-        Log.d("Heey", "sdad");
+        holder.itemView.cid.text = "CID: " + cell!!.cid
+        holder.itemView.rssi.text = "RSSI: " + cell!!.rssi
+        holder.itemView.rsrp.text = "RSRP: " + cell!!.rsrp
+        holder.itemView.rsrq.text = "RSRQ: " + cell!!.rsrq
+        holder.itemView.level.text = "Level: " + cell!!.level
+        holder.itemView.jitter.text = "Jitter: " + cell!!.jitter
+        holder.itemView.ecn0.text = "ECN0: " + cell!!.ecn0
+        holder.itemView.cpich.text = "CPICH: " + cell!!.cpich
+        holder.itemView.uplink.text = "UL Speed: " + cell!!.upKiloBytePerSec
+        holder.itemView.downlink.text = "DL Speed: " + cell!!.downKiloBytePerSec
+        holder.itemView.avg_latancy.text = "Avg. Latancy: " + cell!!.avgLatency
+        holder.itemView.plmn.text = "PLMN: " + cell!!.plmn
     }
     fun getDate(milliSeconds: Long, dateFormat: String?): String? {
         // Create a DateFormatter object for displaying date in specified format.

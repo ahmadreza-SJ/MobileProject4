@@ -64,11 +64,10 @@ class MapHelpers {
                 val y = thecell.location.longitude
                 val pos = LatLng(x, y)
                 val color = getColorz(thecell.cell,coloring_method, color_map)
-                val plmn = thecell.cell.mcc + thecell.cell.mnc
-                val lac = thecell.cell.lac_tac
+                val plmn = thecell.cell.plmn
                 val celtype = thecell.cell.cellType
 
-                val snip = "$celtype \n Cell: $cid \n PLMN $plmn \n LAC $lac"
+                val snip = "$celtype \n Cell: $cid \n PLMN $plmn"
                 val marker = mMap.addMarker(
                     MarkerOptions().icon(
                     BitmapDescriptorFactory.defaultMarker(color)).position(
@@ -108,19 +107,7 @@ class MapHelpers {
                 }
             }
             else if(coloring_method=="PLMN"){
-                param = (cell.mcc+cell.mnc).toInt()
-            }
-            else if(coloring_method=="MNC"){
-                param = cell.mnc.toInt()
-            }
-            else if(coloring_method=="MCC"){
-                param = cell.mcc.toInt()
-            }
-            else if(coloring_method=="LAC/TAC"){
-                param = cell.lac_tac.toInt()
-            }
-            else if (coloring_method == "ARFCN"){
-                param = cell.arfcn.toInt()
+                param = (cell.plmn).toInt()
             }
             var cur_color = 0
             if (color_map.containsKey(param)){
