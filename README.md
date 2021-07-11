@@ -31,11 +31,14 @@ Android Base Project using Android version 10 and SDK 30(min 28)
 - Use different coloring method due user preference
 
 ## MAP Overview
+
 <br/><br/>
+### Coloring method = CID
 <img src="images/id.jpeg" alt="home prev" width="200"/>
 
 
 <br/><br/>
+### ### Coloring method = Cell Generation
 <img src="images/type.jpeg" alt="map prev" width="200"/>
 ## Tech
 - Android, kotlin
