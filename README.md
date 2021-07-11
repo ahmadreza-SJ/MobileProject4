@@ -1,18 +1,16 @@
 # Thorium_Android
-## Trace model network informaion on your trip
+## Trace mobile network quality on your trip
 
 Android Base Project using Android version 10 and SDK 30(min 28)
 
 ## Preview
 
-### Home View
+### LTE/UMTS/GSM View
 <br/><br/>
-<img src="images/home.jpg" alt="home prev" width="200"/>
+<img src="images/lte-umts.jpeg" alt="home prev" width="200"/>
 
-
-### Map View
 <br/><br/>
-<img src="images/map.jpg" alt="map prev" width="200"/>
+<img src="images/umts-gsm.jpeg" alt="map prev" width="200"/>
 
 ## Our Team:
 - Ahmadreza Sanatjou(a.reza.sanatjoo@gmail.com)
@@ -20,11 +18,25 @@ Android Base Project using Android version 10 and SDK 30(min 28)
 
 ## Features
 
-- Trace Cell ID, Cell type, PLMN, LAC/TAC, ARFCN/eARFCN/,
+-  Average ping latancy
+-  Average Jitter
+-  Downlink Speed
+-  Uplink speed
+-  Cell Strength Level
+-  RssI
+-  Quality information specify for UMTS(EcN0,CPICH-RSCP) and LTE(RSRP,RSRQ)
+
 - Save Cell Info using RoomDataBase.
 - Show each Cell on google map
 - Use different coloring method due user preference
 
+## MAP Overview
+<br/><br/>
+<img src="images/id.jpg" alt="home prev" width="200"/>
+
+
+<br/><br/>
+<img src="images/type.jpg" alt="map prev" width="200"/>
 ## Tech
 - Android, kotlin
 - MVVM architecture
