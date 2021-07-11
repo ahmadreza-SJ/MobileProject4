@@ -1,4 +1,4 @@
-# Thorium_Android
+# MobileNetwork Quality_Android
 ## Trace mobile network quality on your trip
 
 Android Base Project using Android version 10 and SDK 30(min 28)
