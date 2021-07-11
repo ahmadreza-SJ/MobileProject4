@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var locationViewModel: LocationViewModel
     private var current_location: Location? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private var scan_delay: Long = 1000 * 60
+    private var scan_delay: Long = 1000 * 10
     private var jitter: Float = 0f
     private var avg_latency: Float = 0f
     var downkilobytePerSec : Int = 0
@@ -331,7 +331,8 @@ class MainActivity : AppCompatActivity() {
                 "PCFET0NUWVBFIEhUTUwgUFVCTElDICItLy9JRVRGLy9EVEQgSFRNTCAyLjAvL0VOIj4KPGh0bWwPGhlYWQCjx0aXRsZT4zMDEgTW92ZWQgUGVybWFuZW50bHk8L3RpdGxlPgo8L2hlYWQPGJvZHkCjxoMT5Nb3ZlZCBQZXJtYW5lbnRseTwvaDECjxwPlRoZSBkb2N1bWVudCBoYXMgbW92ZWQgPGEgaHJlZj0iaHR0cDovL3NjYWxld2F5LnRlc3RkZWJpdC5pbmZvLyIaGVyZTwvYT4uPC9wPgo8L2JvZHkPC9odG1sPgo"
             )
             .build()
-        println("upload create body.....${requestBody.contentLength()}")
+        println("upload create body.....${upkilobytePerSec}")
+        upkilobytePerSec = body.contentLength().toInt()
         val request: Request = Request.Builder()
             .url("https://speedtest.tele2.net/upload.php")
             .post(requestBody)
