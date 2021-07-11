@@ -329,6 +329,7 @@ class MainActivity : AppCompatActivity() {
         var startTime: Long = 0
         var endTime: Long = 0
         var client: OkHttpClient = OkHttpClient()
+
 //        try {
 //        https://api.imgbb.com/1/upload?key=8deb481db621c460ddaac584c5665308&image=PCFET0NUWVBFIEhUTUwgUFVCTElDICItLy9JRVRGLy9EVEQgSFRNTCAyLjAvL0VOIj4KPGh0bWw+PGhlYWQ+Cjx0aXRsZT4zMDEgTW92ZWQgUGVybWFuZW50bHk8L3RpdGxlPgo8L2hlYWQ+PGJvZHk+CjxoMT5Nb3ZlZCBQZXJtYW5lbnRseTwvaDE+CjxwPlRoZSBkb2N1bWVudCBoYXMgbW92ZWQgPGEgaHJlZj0iaHR0cDovL3NjYWxld2F5LnRlc3RkZWJpdC5pbmZvLyI+aGVyZTwvYT4uPC9wPgo8L2JvZHk+PC9odG1sPgo=
         val jsonObject = JSONObject()
@@ -347,13 +348,13 @@ class MainActivity : AppCompatActivity() {
         //                .build()
         val requestBody: RequestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
             .addFormDataPart(
-                "imgage",
-                "PCFET0NUWVBFIEhUTUwgUFVCTElDICItLy9JRVRGLy9EVEQgSFRNTCAyLjAvL0VOIj4KPGh0bWw+PGhlYWQ+Cjx0aXRsZT4zMDEgTW92ZWQgUGVybWFuZW50bHk8L3RpdGxlPgo8L2hlYWQ+PGJvZHk+CjxoMT5Nb3ZlZCBQZXJtYW5lbnRseTwvaDE+CjxwPlRoZSBkb2N1bWVudCBoYXMgbW92ZWQgPGEgaHJlZj0iaHR0cDovL3NjYWxld2F5LnRlc3RkZWJpdC5pbmZvLyI+aGVyZTwvYT4uPC9wPgo8L2JvZHk+PC9odG1sPgo="
+                "image",
+                "PCFET0NUWVBFIEhUTUwgUFVCTElDICItLy9JRVRGLy9EVEQgSFRNTCAyLjAvL0VOIj4KPGh0bWwPGhlYWQCjx0aXRsZT4zMDEgTW92ZWQgUGVybWFuZW50bHk8L3RpdGxlPgo8L2hlYWQPGJvZHkCjxoMT5Nb3ZlZCBQZXJtYW5lbnRseTwvaDECjxwPlRoZSBkb2N1bWVudCBoYXMgbW92ZWQgPGEgaHJlZj0iaHR0cDovL3NjYWxld2F5LnRlc3RkZWJpdC5pbmZvLyIaGVyZTwvYT4uPC9wPgo8L2JvZHkPC9odG1sPgo"
             )
             .build()
         println("upload create body.....${requestBody.contentLength()}")
         val request: Request = Request.Builder()
-            .url("https://api.imgbb.com/1/upload?key=8deb481db621c460ddaac584c5665308&image=PCFET0NUWVBFIEhUTUwgUFVCTElDICItLy9JRVRGLy9EVEQgSFRNTCAyLjAvL0VOIj4KPGh0bWw+PGhlYWQ+Cjx0aXRsZT4zMDEgTW92ZWQgUGVybWFuZW50bHk8L3RpdGxlPgo8L2hlYWQ+PGJvZHk+CjxoMT5Nb3ZlZCBQZXJtYW5lbnRseTwvaDE+CjxwPlRoZSBkb2N1bWVudCBoYXMgbW92ZWQgPGEgaHJlZj0iaHR0cDovL3NjYWxld2F5LnRlc3RkZWJpdC5pbmZvLyI+aGVyZTwvYT4uPC9wPgo8L2JvZHk+PC9odG1sPgo=")
+            .url("https://api.imgbb.com/1/upload?key=8deb481db621c460ddaac584c5665308")
             .get()
             .build()
         println("after request.....")
@@ -376,6 +377,7 @@ class MainActivity : AppCompatActivity() {
                 val timeTakenSecs =
                     timeTakenMills / 1000 // divide by 1000 to get time in seconds
                 val kilobytePerSec = Math.round(1024 * 5 / timeTakenSecs).toInt()
+                Log.e("AAA", "upload upload kilobyte per sec: $kilobytePerSec")
                 println("upload upload kilobyte per sec: $kilobytePerSec")
                 upkilobytePerSec = kilobytePerSec
             }
