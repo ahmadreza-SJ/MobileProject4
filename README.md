@@ -38,7 +38,7 @@ Android Base Project using Android version 10 and SDK 30(min 28)
 
 
 <br/><br/>
-### ### Coloring method = Cell Generation
+### Coloring method = Cell Generation
 <img src="images/type.jpeg" alt="map prev" width="200"/>
 ## Tech
 - Android, kotlin
