@@ -235,7 +235,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
             android:text="@string/uplink"
-            android:textSize="12sp"
+            android:textSize="14sp"
             android:layout_margin="2dp"/>
 
         <TextView
@@ -246,7 +246,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
             android:text="@string/downlink"
-            android:textSize="12sp"
+            android:textSize="14sp"
             android:layout_margin="2dp"/>
 
     </LinearLayout>
@@ -270,7 +270,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-medium"
             android:text="@string/avg_latancy"
-            android:textSize="16sp"
+            android:textSize="12sp"
             android:layout_margin="2dp"/>
 
         <TextView

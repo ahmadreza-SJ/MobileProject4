@@ -43,8 +43,8 @@ class LocatopnListAdapter :
         holder.itemView.jitter.text = "Jitter: " + cell!!.jitter
         holder.itemView.ecn0.text = "ECN0: " + cell!!.ecn0
         holder.itemView.cpich.text = "CPICH: " + cell!!.cpich
-        holder.itemView.uplink.text = "Up Link Speed: " + cell!!.upKiloBytePerSec
-        holder.itemView.downlink.text = "Down Link Speed: " + cell!!.downKiloBytePerSec
+        holder.itemView.uplink.text = "UL Speed: " + cell!!.upKiloBytePerSec
+        holder.itemView.downlink.text = "DL Speed: " + cell!!.downKiloBytePerSec
         holder.itemView.avg_latancy.text = "Avg. Latancy: " + cell!!.avgLatency
         holder.itemView.plmn.text = "PLMN: " + cell!!.plmn
     }

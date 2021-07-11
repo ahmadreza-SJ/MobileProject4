@@ -25,6 +25,6 @@
     <string name="cpich">CPICH:</string>
     <string name="jitter">Jitter:</string>
     <string name="avg_latancy">Avg. Latancy:</string>
-    <string name="downlink">Down Link Speed:</string>
-    <string name="uplink">Up Link Speed:</string>
+    <string name="downlink">DL Speed:</string>
+    <string name="uplink">UL Speed:</string>
 </resources>
