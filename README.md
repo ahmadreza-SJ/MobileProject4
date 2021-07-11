@@ -32,11 +32,11 @@ Android Base Project using Android version 10 and SDK 30(min 28)
 
 ## MAP Overview
 <br/><br/>
-<img src="images/id.jpg" alt="home prev" width="200"/>
+<img src="images/id.jpeg" alt="home prev" width="200"/>
 
 
 <br/><br/>
-<img src="images/type.jpg" alt="map prev" width="200"/>
+<img src="images/type.jpeg" alt="map prev" width="200"/>
 ## Tech
 - Android, kotlin
 - MVVM architecture
