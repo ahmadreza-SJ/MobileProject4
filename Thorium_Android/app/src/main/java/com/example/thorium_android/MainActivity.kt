@@ -27,7 +27,6 @@ import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
-import com.lordcodes.turtle.shellRun
 import okhttp3.*
 import org.json.JSONObject
 import java.io.*
@@ -110,15 +109,15 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("MissingPermission")
     fun getCellInfo(tm: TelephonyManager){
 
-        var cid: String = ""
-        var plmn: String = ""
-        var rssi: String = ""
-        var level: String = ""
-        var rsrp: String = ""
-        var rsrq: String = ""
-        var ecn0: String = ""
-        var cpich: String = ""
-        var cell_type: String = ""
+        var cid: String = "-"
+        var plmn: String = "-"
+        var rssi: String = "-"
+        var level: String = "-"
+        var rsrp: String = "-"
+        var rsrq: String = "-"
+        var ecn0: String = "-"
+        var cpich: String = "-"
+        var cell_type: String = "-"
 
         val infos = tm.allCellInfo
 
@@ -186,9 +185,9 @@ class MainActivity : AppCompatActivity() {
                     rsrp = rsrp,
                     rsrq = rsrq,
                     ecn0 = ecn0,
-                    jitter = jitter.toString() + " ms",
+                    jitter = "%.2f".format(jitter) + " ms",
                     cpich = cpich,
-                    avgLatency = avg_latency.toString() + " ms",
+                    avgLatency = "%.2f".format(avg_latency) + " ms",
                     downKiloBytePerSec = downkilobytePerSec.toString() + " kbps",
                     upKiloBytePerSec = upkilobytePerSec.toString() + " kbps"
                 )
@@ -312,7 +311,6 @@ class MainActivity : AppCompatActivity() {
         var client: OkHttpClient = OkHttpClient()
 
 //        try {
-//        https://api.imgbb.com/1/upload?key=8deb481db621c460ddaac584c5665308&image=PCFET0NUWVBFIEhUTUwgUFVCTElDICItLy9JRVRGLy9EVEQgSFRNTCAyLjAvL0VOIj4KPGh0bWw+PGhlYWQ+Cjx0aXRsZT4zMDEgTW92ZWQgUGVybWFuZW50bHk8L3RpdGxlPgo8L2hlYWQ+PGJvZHk+CjxoMT5Nb3ZlZCBQZXJtYW5lbnRseTwvaDE+CjxwPlRoZSBkb2N1bWVudCBoYXMgbW92ZWQgPGEgaHJlZj0iaHR0cDovL3NjYWxld2F5LnRlc3RkZWJpdC5pbmZvLyI+aGVyZTwvYT4uPC9wPgo8L2JvZHk+PC9odG1sPgo=
         val jsonObject = JSONObject()
         jsonObject.put(
             "image",
@@ -335,7 +333,7 @@ class MainActivity : AppCompatActivity() {
             .build()
         println("upload create body.....${requestBody.contentLength()}")
         val request: Request = Request.Builder()
-            .url("http://speedtest.tele2.net/upload.php")
+            .url("https://speedtest.tele2.net/upload.php")
             .post(requestBody)
             .build()
         println("after request.....")

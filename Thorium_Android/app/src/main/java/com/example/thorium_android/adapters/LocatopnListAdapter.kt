@@ -37,12 +37,18 @@ class LocatopnListAdapter :
         holder.itemView.longitude.text = "Long: " + currentItem.longitude.toString()
         holder.itemView.cid.text = "CID: " + cell!!.cid
         holder.itemView.rssi.text = "RSSI: " + cell!!.rssi
-        holder.itemView.rsrp.text = "RSRP: " + cell!!.rsrp
-        holder.itemView.rsrq.text = "RSRQ: " + cell!!.rsrq
+        if(cell.cellType == "LTE"){
+            holder.itemView.rsrp.text = "RSRP: " + cell!!.rsrp
+            holder.itemView.rsrq.text = "RSRQ: " + cell!!.rsrq
+        }
+        else{
+            holder.itemView.rsrp.text = "ECN0: " + cell!!.ecn0
+            holder.itemView.rsrq.text = "CPICH: " + cell!!.cpich
+        }
+
         holder.itemView.level.text = "Level: " + cell!!.level
         holder.itemView.jitter.text = "Jitter: " + cell!!.jitter
-        holder.itemView.ecn0.text = "ECN0: " + cell!!.ecn0
-        holder.itemView.cpich.text = "CPICH: " + cell!!.cpich
+
         holder.itemView.uplink.text = "UL Speed: " + cell!!.upKiloBytePerSec
         holder.itemView.downlink.text = "DL Speed: " + cell!!.downKiloBytePerSec
         holder.itemView.avg_latancy.text = "Avg. Latancy: " + cell!!.avgLatency
