@@ -24,11 +24,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-<<<<<<< HEAD
-=======
 import androidx.core.location.LocationManagerCompat.isLocationEnabled
 import androidx.lifecycle.Observer
->>>>>>> 4199ec905221e1f371a9010f80f89b7a9d1ef4d3
 import androidx.lifecycle.ViewModelProvider
 import com.example.thorium_android.entities.Cell
 import com.example.thorium_android.entities.LocData
@@ -53,7 +50,6 @@ import java.io.InputStream
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.lang.Exception
-
 
 
 class MainActivity : AppCompatActivity() {
@@ -196,60 +192,67 @@ class MainActivity : AppCompatActivity() {
         finally {
             requestNewLocationData()
 
-//            if (current_location != null )
-//            {
-////                Log.d("ADebugTag", "longitude Value: " + current_location!!.longitude);
-////                Log.d("ADebugTag", "latitude Value: " + current_location!!.latitude);
-//                val cellData = Cell(
-//                    cid = cid,
-//                    lac_tac = lac,
-//                    mcc = mcc,
-//                    mnc = mnc,
-//                    arfcn = arfcn,
-//                    cellType = cell_type
-//                )
-//                val location = LocData(
-//                    id = null,
-//                    latitude = current_location!!.latitude,
-//                    longitude = current_location!!.longitude,
-//                    cellId = cellData.cid,
-//                    time = System.currentTimeMillis(),
-//                )
-//                var checked : Boolean = false
-//                var dist_constraint : Boolean = false
-//                locationViewModel.allLocations.observe(this, Observer { locations ->
-//                    // Update the list of markers
-//                    Log.d("ADebugTag", "Finding each location");
-//                    locations?.let {
-//                        if (locations != null) {
-//
-//                            checked = true
-//                            val distances = floatArrayOf(.1f)
-//                            for (oldlocation in locations.iterator()) {
-//                                Location.distanceBetween(
-//                                    oldlocation.latitude, oldlocation.longitude,
-//                                    location.latitude, location.longitude, distances
-//                                );
-//                            }
-//                            Log.d("ADebugTag", "distance location! " + distances[0].toString());
-//                            if (distances[0] < 3) {
-//                                Log.d(
-//                                    "ADebugTag",
-//                                    "Dont add new locatiob " + distances[0].toString()
-//                                );
-//                                dist_constraint = true
-//                            }
-//                        }
-//                    }
-//                })
-//                if (checked == false || dist_constraint == false){
-//                    Log.d("ADebugTag", "Location added");
-//                    locationViewModel.addCell(cellData)
-//                    locationViewModel.addLocation(location)
-//                }
-//
-//
-//            }
+            if (current_location != null )
+            {
+//                Log.d("ADebugTag", "longitude Value: " + current_location!!.longitude);
+//                Log.d("ADebugTag", "latitude Value: " + current_location!!.latitude);
+                val cellData = Cell(
+                    cid = cid,
+                    cellType = cell_type,
+                    plmn = plmn,
+                    rssi = rssi,
+                    level = level,
+                    rsrp = rsrp,
+                    rsrq = rsrq,
+                    ecn0 = ecn0,
+                    jitter = jitter.toString() + " ms",
+                    cpich = cpich,
+                    avgLatency = avg_latency.toString() + " ms",
+                    downKiloBytePerSec = downkilobytePerSec.toString() + " kbps",
+                    upKiloBytePerSec = upkilobytePerSec.toString() + " kbps"
+                )
+                val location = LocData(
+                    id = null,
+                    latitude = current_location!!.latitude,
+                    longitude = current_location!!.longitude,
+                    cellId = cellData.cid,
+                    time = System.currentTimeMillis(),
+                )
+                var checked : Boolean = false
+                var dist_constraint : Boolean = false
+                locationViewModel.allLocations.observe(this, Observer { locations ->
+                    // Update the list of markers
+                    Log.d("ADebugTag", "Finding each location");
+                    locations?.let {
+                        if (locations != null) {
+
+                            checked = true
+                            val distances = floatArrayOf(.1f)
+                            for (oldlocation in locations.iterator()) {
+                                Location.distanceBetween(
+                                    oldlocation.latitude, oldlocation.longitude,
+                                    location.latitude, location.longitude, distances
+                                );
+                            }
+                            Log.d("ADebugTag", "distance location! " + distances[0].toString());
+                            if (distances[0] < 3) {
+                                Log.d(
+                                    "ADebugTag",
+                                    "Dont add new locatiob " + distances[0].toString()
+                                );
+                                dist_constraint = true
+                            }
+                        }
+                    }
+                })
+                if (checked == false || dist_constraint == false){
+                    Log.d("ADebugTag", "Location added");
+                    locationViewModel.addCell(cellData)
+                    locationViewModel.addLocation(location)
+                }
+
+
+            }
 
         }
 //        Log.d("ADebugTag", "cid Value: " + cid);
@@ -270,6 +273,8 @@ class MainActivity : AppCompatActivity() {
             mLocationRequest, mLocationCallback, Looper.myLooper()
         )
     }
+
+
 
 
     private fun speed(){

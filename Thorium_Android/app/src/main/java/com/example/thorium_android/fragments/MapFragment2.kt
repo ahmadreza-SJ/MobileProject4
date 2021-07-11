@@ -26,7 +26,7 @@ class MapFragment2 : Fragment(), OnMapReadyCallback {
     private var activeMarkers = mutableListOf<Marker>()
     var color_map = mutableMapOf<Int, Int>()
     private val filters =
-        arrayOf("CID", "LAC/TAC", "Cell Type", "MCC", "MNC","PLMN", "ARFCN")
+        arrayOf("CID", "Cell Type","PLMN")
     var color_method = "CID"
 
     override fun onCreateView(

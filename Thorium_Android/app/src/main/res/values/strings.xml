@@ -13,11 +13,18 @@
 
     <string name="type" id="shit">Type:</string>
     <string name="time">Time:</string>
-    <string name="altitude">Altitude:</string>
+    <string name="latitude">Latitude:</string>
     <string name="longitude">Longitude:</string>
-    <string name="mnc">Mnc:</string>
-    <string name="mcc">Mcc:</string>
-    <string name="lac">Lac/Tac:</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="cid">CID:</string>
+    <string name="plmn">PLMN:</string>
+    <string name="rssi">RSSI:</string>
+    <string name="level">Level:</string>
+    <string name="rsrp">RSRP:</string>
+    <string name="rsrq">RSRQ:</string>
+    <string name="ecn0">ECN0:</string>
+    <string name="cpich">CPICH:</string>
+    <string name="jitter">Jitter:</string>
+    <string name="avg_latancy">Avg. Latancy:</string>
+    <string name="downlink">Down Link Speed:</string>
+    <string name="uplink">Up Link Speed:</string>
 </resources>
